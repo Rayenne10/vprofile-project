@@ -16,7 +16,7 @@ pipeline {
 		NEXUS_PASS = 'rayen10'
 		RELEASE_REPO = 'vprofile-release'
 		CENTRAL_REPO = 'vpro-maven-central'
-		NEXUSIP = '192.168.56.14'
+		NEXUSIP = '172.31.93.35'
 		NEXUSPORT = '8081'
 		NEXUS_GRP_REPO = 'vpro-maven-group'
         NEXUS_LOGIN = 'nexuslogin'
@@ -29,23 +29,23 @@ pipeline {
             steps {
                 sh 'mvn -s settings.xml -DskipTests -U install'
             }
-            post {
-                success {
-                    echo "Now Archiving."
-                    archiveArtifacts artifacts: '**/*.war'
-                }
-            }
+            // post {
+            //     success {
+            //         echo "Now Archiving."
+            //         archiveArtifacts artifacts: '**/*.war'
+            //     }
+            // }
         }
-        stage('Test') {
-            steps {
-                sh 'mvn -s settings.xml test'
-            }
-        }
-        stage('Checkstyle Analysis') {
-            steps {
-                sh 'mvn -s settings.xml checkstyle:checkstyle'
-            }
-        }
+        // stage('Test') {
+        //     steps {
+        //         sh 'mvn -s settings.xml test'
+        //     }
+        // }
+        // stage('Checkstyle Analysis') {
+        //     steps {
+        //         sh 'mvn -s settings.xml checkstyle:checkstyle'
+        //     }
+        // }
 
     //     stage('Sonar Analysis') {
     //         environment {
@@ -73,34 +73,34 @@ pipeline {
     //             }
     //         }
     //     }
-        stage("UploadArtifact") {
-            steps {
-                nexusArtifactUploader (
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
-                    groupId: 'QA',
-                    version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
-                    repository: "${RELEASE_REPO}",
-                    credentialsId: "${NEXUS_LOGIN}",
-                    artifacts: [
-                        [artifactId: 'vproapp',
-                        classifier: '',
-                        file: 'target/vprofile-v2.war',
-                        type: 'war']
-                    ]
-                )
-            }
-        }
+        // stage("UploadArtifact") {
+        //     steps {
+        //         nexusArtifactUploader (
+        //             nexusVersion: 'nexus3',
+        //             protocol: 'http',
+        //             nexusUrl: "${NEXUSIP}:${NEXUSPORT}",
+        //             groupId: 'QA',
+        //             version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+        //             repository: "${RELEASE_REPO}",
+        //             credentialsId: "${NEXUS_LOGIN}",
+        //             artifacts: [
+        //                 [artifactId: 'vproapp',
+        //                 classifier: '',
+        //                 file: 'target/vprofile-v2.war',
+        //                 type: 'war']
+        //             ]
+        //         )
+        //     }
+        // }
     }   
 
-    post {
-        always {
-            echo 'Slack Notifications.'
-            slackSend channel: '#jenkins_pipeline',
-                color: COLOR_MAP[currentBuild.currentResult],
-                message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
-        }
-    }
+    // post {
+    //     always {
+    //         echo 'Slack Notifications.'
+    //         slackSend channel: '#jenkins_pipeline',
+    //             color: COLOR_MAP[currentBuild.currentResult],
+    //             message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+    //     }
+    // }
 
 }
