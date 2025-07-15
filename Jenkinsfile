@@ -1,7 +1,7 @@
-def COLOR_MAP = [
-    'SUCCESS': 'good', 
-    'FAILURE': 'danger',
-]
+// def COLOR_MAP = [
+//     'SUCCESS': 'good', 
+//     'FAILURE': 'danger',
+// ]
 
 pipeline {
     agent any
@@ -29,23 +29,23 @@ pipeline {
             steps {
                 sh 'mvn -s settings.xml -DskipTests -U install'
             }
-            // post {
-            //     success {
-            //         echo "Now Archiving."
-            //         archiveArtifacts artifacts: '**/*.war'
-            //     }
-            // }
+            post {
+                success {
+                    echo "Now Archiving."
+                    archiveArtifacts artifacts: '**/*.war'
+                }
+            }
         }
-        // stage('Test') {
-        //     steps {
-        //         sh 'mvn -s settings.xml test'
-        //     }
-        // }
-        // stage('Checkstyle Analysis') {
-        //     steps {
-        //         sh 'mvn -s settings.xml checkstyle:checkstyle'
-        //     }
-        // }
+        stage('Test') {
+            steps {
+                sh 'mvn -s settings.xml test'
+            }
+        }
+        stage('Checkstyle Analysis') {
+            steps {
+                sh 'mvn -s settings.xml checkstyle:checkstyle'
+            }
+        }
 
     //     stage('Sonar Analysis') {
     //         environment {
